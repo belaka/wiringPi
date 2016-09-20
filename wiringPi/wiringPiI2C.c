@@ -132,13 +132,19 @@ int wiringPiI2CRead (int fd)
  *********************************************************************************
  */
 
-int wiringPiI2CReadBuffer (int fd, unsigned char reg, unsigned char *buffer, int length)
+int wiringPiI2CReadBuffer (int fd, unsigned char reg, int cmd, int pin, int length)
 {
   union i2c_smbus_data  data;
   // int               i;
   int               rc;
+  
+  unsigned char buffer[] = {0, 0, 0, 0};
+  buffer[0] = cmd;
+  buffer[1] = pin;
 
   rc = read (fd, buffer, length);
+  
+  
   /*printf ("rc %d\n", rc);
   if( rc >= 0 )
   {
@@ -197,10 +203,15 @@ int wiringPiI2CWrite (int fd, int data)
  *********************************************************************************
  */
 
-int wiringPiI2CWriteBuffer (int fd, unsigned char reg, const unsigned char *buffer, int length)
+int wiringPiI2CWriteBuffer (int fd, unsigned char reg, int cmd, int pin, int val, int length)
 {
   union i2c_smbus_data  data;
   int               i;
+  
+  unsigned char buffer[] = {0, 0, 0, 0};
+  buffer[0] = cmd;
+  buffer[1] = pin;
+  buffer[2] = val;
 
   if( length > I2C_SMBUS_BLOCK_MAX )
   {
