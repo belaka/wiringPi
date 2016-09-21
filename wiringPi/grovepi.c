@@ -86,13 +86,9 @@ static void grovepiDigitalWrite (struct wiringPiNodeStruct *node, int pin, int v
 
 static int grovepiDigitalRead (struct wiringPiNodeStruct *node, int pin)
 {
-  //unsigned char buffer[] = {1, 0, 0, 0};
   pin = pin - node->pinBase;
   int res = 0;
 
-  //buffer[1] = pin;
-
-  // cmd , pin, val
   wiringPiI2CWriteBuffer (node->fd, 1, 1, pin, 0, 4) ;
 
   delay (1);
@@ -102,6 +98,7 @@ static int grovepiDigitalRead (struct wiringPiNodeStruct *node, int pin)
   {
     pins[pin] = res;
   }
+  
   return pins[pin];
 }
 
@@ -113,11 +110,7 @@ static int grovepiDigitalRead (struct wiringPiNodeStruct *node, int pin)
 
 static void grovepiAnalogWrite (struct wiringPiNodeStruct *node, int pin, int value)
 {
-  //unsigned char buffer[] = {4, 0, 0, 0};
   pin = pin - node->pinBase;
-
-  //buffer[1] = pin;
-  //buffer[2] = value;
 
   wiringPiI2CWriteBuffer (node->fd, 1, 4, pin, value, 4) ;
 }
@@ -138,19 +131,18 @@ static int grovepiAnalogRead (struct wiringPiNodeStruct *node, int pin)
   buffer[1] = pin;
 
   wiringPiI2CWriteBuffer (node->fd, 1, 3, pin, 0, 4) ;
-  // perror ("analog read error");
-
+  
   delay (1);
   wiringPiI2CReadReg8 (node->fd, 1);
 
-  res = wiringPiI2CReadBuffer (node->fd, 0, 3, pin, 4);
+  res = *wiringPiI2CReadBuffer (node->fd, 0, 3, pin, 4);
   if (res >= 4)
   {
     res = buffer[1]*256+buffer[2];
     if (res < 1024) 
       pinsa[pin] = res;
   }
-  return pinsa[pin];
+  return res;
 }
 
 
