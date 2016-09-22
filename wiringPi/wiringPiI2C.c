@@ -68,7 +68,7 @@
 
 #define I2C_SMBUS_QUICK		    0
 #define I2C_SMBUS_BYTE		    1
-#define I2C_SMBUS_BYTE_DATA	    2 
+#define I2C_SMBUS_BYTE_DATA	    2
 #define I2C_SMBUS_WORD_DATA	    3
 #define I2C_SMBUS_PROC_CALL	    4
 #define I2C_SMBUS_BLOCK_DATA	    5
@@ -132,33 +132,31 @@ int wiringPiI2CRead (int fd)
  *********************************************************************************
  */
 
-unsigned char *wiringPiI2CReadBuffer (int fd, unsigned char reg, int cmd, int pin, int length)
+char *wiringPiI2CReadBuffer (int fd, unsigned char reg, int cmd, int pin, int length)
 {
   union i2c_smbus_data  data;
-  int                   i;
+  int                   i = 0;
   
   i2c_smbus_access(fd, I2C_SMBUS_READ, reg,
                           I2C_SMBUS_BLOCK_DATA, &data);
-                          
-  static unsigned char arr[I2C_SMBUS_I2C_BLOCK_MAX];
   
-  for(i=1; i<=data.block[0] && i<=length; ++i) {
-    arr[i-1] = data.block[i];
-  }
-  
-  
-  
-  /*printf ("rc %d\n", rc);
-  if( rc >= 0 )
-  {
-    for(i=1; i<=data.block[0] && i<=length; ++i)
-    {
-      buffer[i-1] = data.block[i];
-    }
-    rc = data.block[0];
-  }*/
+  /* target buffer should be large enough */
+  static char rtnPtr[1024];
 
-  return arr;
+  unsigned char * uint = data.block;
+  const char * hex = "0123456789abcdef";
+  char * pout = rtnPtr;
+  for(; i < sizeof(data.block)-1; ++i){
+      printf("|%u|\n",data.block[i]);
+      *pout++ = hex[(*uint>>4)&0xF];
+      *pout++ = hex[(*uint++)&0xF];
+      *pout++ = ':';
+  }
+  *pout++ = hex[(*uint>>4)&0xF];
+  *pout++ = hex[(*uint)&0xF];
+  *pout = 0;
+
+  return rtnPtr ;
 }
 
 
