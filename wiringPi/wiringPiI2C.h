@@ -27,12 +27,12 @@ extern "C" {
 #endif
 
 extern int wiringPiI2CRead           (int fd) ;
-extern char *wiringPiI2CReadBuffer (int fd, unsigned char reg, int cmd, int pin, int length) ;
+extern char *wiringPiI2CReadBuffer   (int fd, int reg, int cmd, int pin, int length) ;
 extern int wiringPiI2CReadReg8       (int fd, int reg) ;
 extern int wiringPiI2CReadReg16      (int fd, int reg) ;
 
 extern int wiringPiI2CWrite          (int fd, int data) ;
-extern int wiringPiI2CWriteBuffer 	 (int fd, unsigned char reg, int cmd, int pin, int val, int length) ;
+extern int wiringPiI2CWriteBuffer    (int fd, int reg, int cmd, int val1, int val2, int val3, int length) ;
 extern int wiringPiI2CWriteReg8      (int fd, int reg, int data) ;
 extern int wiringPiI2CWriteReg16     (int fd, int reg, int data) ;
 

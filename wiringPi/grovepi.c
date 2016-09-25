@@ -55,7 +55,7 @@ static void grovepiPinMode (struct wiringPiNodeStruct *node, int pin, int mode)
   //buffer[1] = pin;
   //buffer[2] = mode;
 
-  wiringPiI2CWriteBuffer (node->fd, 1, 5, pin, mode, 4) ;
+  wiringPiI2CWriteBuffer (node->fd, 1, 5, pin, mode, 0, 4) ;
 }
 
 
@@ -74,7 +74,7 @@ static void grovepiDigitalWrite (struct wiringPiNodeStruct *node, int pin, int v
 
   // printf ("digitalWrite %d\n", pin);
 
-  wiringPiI2CWriteBuffer (node->fd, 1, 2, pin, value, 4) ;
+  wiringPiI2CWriteBuffer (node->fd, 1, 2, pin, value, 0, 4) ;
   // perror ("digitalWrite");
 }
 
@@ -89,7 +89,7 @@ static int grovepiDigitalRead (struct wiringPiNodeStruct *node, int pin)
   pin = pin - node->pinBase;
   int res = 0;
 
-  wiringPiI2CWriteBuffer (node->fd, 1, 1, pin, 0, 4) ;
+  wiringPiI2CWriteBuffer (node->fd, 1, 1, pin, 0, 0, 4) ;
 
   delay (1);
 
@@ -112,7 +112,7 @@ static void grovepiAnalogWrite (struct wiringPiNodeStruct *node, int pin, int va
 {
   pin = pin - node->pinBase;
 
-  wiringPiI2CWriteBuffer (node->fd, 1, 4, pin, value, 4) ;
+  wiringPiI2CWriteBuffer (node->fd, 1, 4, pin, value, 0, 4) ;
 }
 
 
@@ -130,7 +130,7 @@ static int grovepiAnalogRead (struct wiringPiNodeStruct *node, int pin)
 
   //buffer[1] = pin;
 
-  wiringPiI2CWriteBuffer (node->fd, 1, 3, pin, 0, 4) ;
+  wiringPiI2CWriteBuffer (node->fd, 1, 3, pin, 0, 0, 4) ;
   
   delay (1);
   wiringPiI2CReadReg8 (node->fd, 1);

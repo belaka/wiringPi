@@ -132,22 +132,25 @@ int wiringPiI2CRead (int fd)
  *********************************************************************************
  */
 
-char *wiringPiI2CReadBuffer (int fd, unsigned char reg, int cmd, int pin, int length)
+char *wiringPiI2CReadBuffer (int fd, int reg, int cmd, int pin, int length)
 {
   union i2c_smbus_data  data;
-  int                   i = 0;
-  
+  int                   i = 1;
+
+  if (length > I2C_SMBUS_BLOCK_MAX)
+      length = I2C_SMBUS_BLOCK_MAX;
+	data.block[0] = length;
+
   i2c_smbus_access(fd, I2C_SMBUS_READ, reg,
-                          I2C_SMBUS_BLOCK_DATA, &data);
-  
+			       length == 32 ? I2C_SMBUS_I2C_BLOCK_BROKEN : I2C_SMBUS_I2C_BLOCK_DATA, &data);
+
   /* target buffer should be large enough */
-  static char rtnPtr[1024];
+  static char rtnPtr[I2C_SMBUS_BLOCK_MAX];
 
   unsigned char * uint = data.block;
   const char * hex = "0123456789abcdef";
   char * pout = rtnPtr;
-  for(; i < sizeof(data.block)-1; ++i){
-      printf("|%u|\n",data.block[i]);
+  for(; i <= data.block[0]; ++i){
       *pout++ = hex[(*uint>>4)&0xF];
       *pout++ = hex[(*uint++)&0xF];
       *pout++ = ':';
@@ -204,15 +207,16 @@ int wiringPiI2CWrite (int fd, int data)
  *********************************************************************************
  */
 
-int wiringPiI2CWriteBuffer (int fd, unsigned char reg, int cmd, int pin, int val, int length)
+int wiringPiI2CWriteBuffer (int fd, int reg, int cmd, int val1, int val2, int val3, int length)
 {
   union i2c_smbus_data  data;
   int               i;
   
   unsigned char buffer[] = {0, 0, 0, 0};
   buffer[0] = cmd;
-  buffer[1] = pin;
-  buffer[2] = val;
+  buffer[1] = val1;
+  buffer[2] = val2;
+  buffer[3] = val3;
 
   if( length > I2C_SMBUS_BLOCK_MAX )
   {
